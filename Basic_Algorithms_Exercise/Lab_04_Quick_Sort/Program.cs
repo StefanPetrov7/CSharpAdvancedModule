@@ -23,7 +23,7 @@ namespace Lab_04_Quick_Sort
 
         static List<int> QuickSortTwo(List<int> list)
         {
-            if (list.Count <= 1)  // to check if colllection is from one or less elements.
+            if (list.Count <= 1)  // to check if the collection is from one or less elements.
             {    
                 return list;
             }
