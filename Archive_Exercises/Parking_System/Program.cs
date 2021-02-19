@@ -1,183 +1,69 @@
 ﻿using System;
-using System.Linq;
-
-namespace Parking_System
+namespace ParkingSystem
 {
     class Program
     {
-        internal class Car
-        {
-            public Car(int row, int col)
-            {
-                this.Row = row;
-                this.Col = col;
-                this.Distance = 1;
-            }
-
-            public int Row { get; set; }
-            public int Col { get; set; }
-            public int RowEnd { get; set; }
-            public int ColEnd { get; set; }
-            public int Distance { get; set; }
-            public bool EmptyLeftFound { get; set; }
-            public bool EmptyRightFound { get; set; }
-            public int ExtraLeft { get; set; }
-            public int ExtraRight { get; set; }
-        }
-
         static void Main(string[] args)
         {
-            const string FINISH_INPUT = "stop";
-            int[] size = Console.ReadLine()
-                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
-            byte[,] matrix = new byte[size[0], size[1]];
+            string[] size = Console.ReadLine().Split();
+            int rows = int.Parse(size[0]);
+            int cols = int.Parse(size[1]);
 
-            string input;
+            byte[][] matrix = new byte[rows][];
 
-            while ((input = Console.ReadLine()) != FINISH_INPUT)
+            string command = string.Empty;
+
+            while ((command = Console.ReadLine()) != "stop")
             {
-                int[] info = input
-                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
+                string[] input = command.Split();
 
-                Car car = new Car(info[0], 0)
-                {
-                    RowEnd = info[1],
-                    ColEnd = info[2]
-                };
+                int entrance = int.Parse(input[0]);
+                int parkingRow = int.Parse(input[1]);
+                int parkingCol = int.Parse(input[2]);
 
-                if (VerifyInput(matrix, car))
+                int steps = Math.Abs(entrance - parkingRow) + 1;
+
+                if (matrix[parkingRow] == null)
                 {
-                    if (CarTryToPark(matrix, car))
-                    {
-                        Console.WriteLine(car.Distance);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Row {car.RowEnd} full");
-                    }
+                    matrix[parkingRow] = new byte[cols];
                 }
-            }
-        }
-
-        private static bool CarTryToPark(byte[,] matrix, Car car)
-        {
-            if (car.Row > car.RowEnd)
-            {
-                while (car.Row > car.RowEnd)
+                if (matrix[parkingRow][parkingCol] == 0)
                 {
-                    car.Row--;
-                    car.Distance++;
-                }
-            }
-            else if (car.Row < car.RowEnd)
-            {
-                while (car.Row < car.RowEnd)
-                {
-                    car.Row++;
-                    car.Distance++;
-                }
-            }
-
-            while (car.Col < car.ColEnd)
-            {
-                car.Col++;
-                car.Distance++;
-            }
-
-            if (matrix[car.Row, car.Col] == 0)
-            {
-                matrix[car.Row, car.Col] = 1;
-                return true;
-            }
-            else
-            {
-                while (car.Col > 1)
-                {
-                    car.Col--;
-                    car.ExtraLeft++;
-
-                    if (matrix[car.Row, car.Col] == 0)
-                    {
-                        car.EmptyLeftFound = true;
-                        break;
-                    }
-                }
-
-                car.Col += car.ExtraLeft;
-
-                while (car.Col < matrix.GetLength(1) - 1)
-                {
-                    car.Col++;
-                    car.ExtraRight++;
-
-                    if (matrix[car.Row, car.Col] == 0)
-                    {
-                        car.EmptyRightFound = true;
-                        break;
-                    }
-                }
-
-                car.Col -= car.ExtraRight;
-
-                if (car.EmptyLeftFound == true && car.EmptyRightFound == true)
-                {
-
-                    if (car.ExtraLeft < car.ExtraRight)
-                    {
-                        car.Col -= car.ExtraLeft;
-                        car.Distance -= car.ExtraLeft;
-                        matrix[car.Row, car.Col] = 1;
-                    }
-                    else if (car.ExtraRight < car.ExtraLeft)
-                    {
-                        car.Col += car.ExtraRight;
-                        car.Distance += car.ExtraRight;
-                        matrix[car.Row, car.Col] = 1;
-                    }
-                    else
-                    {
-                        car.Col -= car.ExtraLeft;
-                        car.Distance -= car.ExtraLeft;
-                        matrix[car.Row, car.Col] = 1;
-                    }
-
-                    return true;
-                }
-                else if (car.EmptyLeftFound == true)
-                {
-                    car.Col -= car.ExtraLeft;
-                    car.Distance -= car.ExtraLeft;
-                    matrix[car.Row, car.Col] = 1;
-                    return true;
-                }
-                else if (car.EmptyRightFound == true)
-                {
-                    car.Col += car.ExtraRight;
-                    car.Distance += car.ExtraRight;
-                    matrix[car.Row, car.Col] = 1;
-                    return true;
+                    matrix[parkingRow][parkingCol] = 1;
+                    steps += parkingCol;
+                    Console.WriteLine(steps);
                 }
                 else
                 {
-                    return false;
+                    int count = 1;
+                    while (true)
+                    {
+                        int lowerCell = parkingCol - count;
+                        int upperCell = parkingCol + count;
+
+                        if (lowerCell < 1 && upperCell > cols - 1) // out of bound
+                        {
+                            Console.WriteLine($"Row {parkingRow} full");
+                            break;
+                        }
+                        if (lowerCell > 0 && matrix[parkingRow][lowerCell] == 0)//inside the row and free
+                        {
+                            matrix[parkingRow][lowerCell] = 1;
+                            steps += lowerCell;
+                            Console.WriteLine(steps);
+                            break;
+                        }
+                        if (upperCell < cols && matrix[parkingRow][upperCell] == 0)
+                        {
+                            matrix[parkingRow][upperCell] = 1;
+                            steps += upperCell;
+                            Console.WriteLine(steps);
+                            break;
+                        }
+                        count++;
+                    }
                 }
             }
-        }
-
-        private static bool VerifyInput(byte[,] matrix, Car car)
-        {
-
-            if (car.RowEnd < 0 || car.RowEnd > matrix.GetLength(0) - 1
-                || car.ColEnd < 0 || car.ColEnd > matrix.GetLength(1) - 1)
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }
