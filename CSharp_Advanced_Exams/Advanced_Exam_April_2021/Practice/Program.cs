@@ -127,7 +127,7 @@ namespace Super_Mario
             }
         }
 
-        private static void ComleteMatrix(char[][] matrix, int size, int[] marioRow, int[] marioCol)
+        private static void CompleteMatrix(char[][] matrix, int size, int[] marioRow, int[] marioCol)
         {
             for (int r = 0; r < size; r++)
             {
