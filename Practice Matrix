@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int n = int.Parse(Console.ReadLine());
+            int[] size = Console.ReadLine()
+                .Split(", ", StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToArray();
+
+            int[,] matrix = ReadMatrix(size[0], size[1]);
+
+            int curBestSum = 0;
+            int bestRow = -1;
+            int bestCol = -1;
+
+
+            for (int r = 0; r < matrix.GetLength(0) - n + 1; r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1) - n + 1; c++)
+                {
+
+                    int currentSum = 0;
+
+                    for (int x = r; x < r + n; x++)
+                    {
+                        for (int y = c; y < c + n; y++)
+                        {
+                            currentSum += matrix[x, y];
+                        }
+                    }
+
+                    if (currentSum > curBestSum)
+                    {
+                        curBestSum = currentSum;
+                        bestRow = r;
+                        bestCol = c;
+                    }
+
+                }
+            }
+
+
+            PrintMatrix(matrix, bestRow, bestCol, n);
+            Console.WriteLine(curBestSum);
+
+        }
+
+        static int[,] ReadMatrix(int row, int col)
+        {
+            int[,] matrix = new int[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                int[] readRow = Console.ReadLine()
+                    .Split(", ", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToArray();
+
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = readRow[c];
+                }
+            }
+
+            return matrix;
+        }
+
+        static void PrintMatrix(int[,] matrix, int row, int col, int n)
+        {
+            for (int r = row; r < row + n; r++)
+            {
+                for (int c = col; c < col + n; c++)
+                {
+                    Console.Write(matrix[r, c] + " ");
+                }
+
+                Console.WriteLine();
+            }
+
+        }
+    }
+}
