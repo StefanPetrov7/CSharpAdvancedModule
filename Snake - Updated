@@ -1,0 +1,111 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int[] size = Console.ReadLine().Split(' ').Select(int.Parse).ToArray();
+            string[,] matrix = ReadMatrix(size[0], size[1]);
+            Queue<char> snake = new Queue<char>(Console.ReadLine().ToCharArray());
+            int row = 0;
+            int col = 0;
+            string direction = "right";
+            int iteration = 0;
+
+            while (iteration < size[0] * size[1])
+            {
+                matrix[row, col] = snake.Peek().ToString();
+                snake.Enqueue(snake.Dequeue());
+                iteration++;
+
+                if (direction == "right")
+                {
+                    Right(matrix, ref row, ref col, ref direction);
+                }
+                else if (direction == "left")
+                {
+                    Left(matrix, ref row, ref col, ref direction);
+                }
+                else
+                {
+                    Down(matrix, ref row, ref col, ref direction);
+                }
+            }
+
+            PrintMatrix(matrix);
+
+        }
+
+        static void Right(string[,] matrix, ref int row, ref int col, ref string direction)
+        {
+            col++;
+
+            if (col > matrix.GetLength(1) - 1)
+            {
+                direction = "down";
+                col--;
+                row++;
+            }
+        }
+
+        static void Left(string[,] matrix, ref int row, ref int col, ref string direction)
+        {
+            col--;
+
+            if (col < 0)
+            {
+                direction = "down";
+                col++;
+                row++;
+            }
+        }
+
+        static void Down(string[,] matrix, ref int row, ref int col, ref string direction)
+        {
+
+            if (col == matrix.GetLength(1) - 1)
+            {
+                direction = "left";
+                col--;
+            }
+            else
+            {
+                direction = "right";
+                col++;
+            }
+        }
+
+        static string[,] ReadMatrix(int row, int col)
+        {
+            string[,] matrix = new string[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = ".";
+                }
+            }
+
+            return matrix;
+        }
+
+        static void PrintMatrix(string[,] matrix)
+        {
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    Console.Write(matrix[r, c]);
+                }
+
+                Console.WriteLine();
+            }
+        }
+    }
+}
