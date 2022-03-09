@@ -1,0 +1,92 @@
+using System;
+using System.Linq;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int[] size = Console.ReadLine().Split(' ').Select(int.Parse).ToArray();
+            string[,] matrix = ReadMatrix(size[0], size[1]);
+            string input;
+
+
+            while ((input = Console.ReadLine()) != "END")
+            {
+                string[] arg = input.Split(" ").ToArray();
+
+                if (arg[0] != "swap" || arg.Length != 5)
+                {
+                    Console.WriteLine("Invalid input!");
+                    continue;
+                }
+
+                int rowFirst = int.Parse(arg[1]);
+                int colFirst = int.Parse(arg[2]);
+                int rowSecond = int.Parse(arg[3]);
+                int colSecond = int.Parse(arg[4]);
+
+                if (!IsValid(matrix, rowFirst, colFirst, rowSecond, colSecond))
+                {
+                    Console.WriteLine("Invalid input!");
+                    continue;
+                }
+
+                string firstElement = matrix[rowFirst, colFirst];
+                string secondElement = matrix[rowSecond, colSecond];
+                matrix[rowFirst, colFirst] = secondElement;
+                matrix[rowSecond, colSecond] = firstElement;
+
+                PrintMatrix(matrix);
+
+            }
+
+        }
+
+        static bool IsValid(string[,] matrix, int row, int col, int row2, int col2)
+        {
+            if (row < 0 || row > matrix.GetLength(0) - 1 || col < 0 || col > matrix.GetLength(1) - 1
+                || row2 < 0 || row2 > matrix.GetLength(0) - 1 || col2 < 0 || col2 > matrix.GetLength(1) - 1)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        static string[,] ReadMatrix(int row, int col)
+        {
+            string[,] matrix = new string[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                string[] input = Console.ReadLine()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = input[c];
+                }
+            }
+
+            return matrix;
+        }
+
+        static void PrintMatrix(string[,] matrix)
+        {
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    Console.Write(matrix[r, c] + " ");
+                }
+
+                Console.WriteLine();
+            }
+        }
+    }
+}
