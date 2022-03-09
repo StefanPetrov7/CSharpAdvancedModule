@@ -1,0 +1,72 @@
+using System;
+using System.Linq;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int[] size = Console.ReadLine().Split(' ').Select(int.Parse).ToArray();
+            char[,] matrix = ReadMatrix(size[0], size[1]);
+            int squareCounbt = 0;
+
+
+            for (int r = 0; r < matrix.GetLength(0) - 1; r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1) - 1; c++)
+                {
+                    bool isSame = true;
+                    char curChar = matrix[r, c];
+
+                    for (int x = r; x < r + 2; x++)
+                    {
+                        for (int y = c; y < c + 2; y++)
+                        {
+                            char compareChar = matrix[x, y];
+
+                            if (curChar != compareChar)
+                            {
+                                isSame = false;
+                                break;
+                            }
+                        }
+
+                        if (!isSame)
+                        {
+                            isSame = false;
+                            break;
+                        }
+                    }
+
+                    if (isSame)
+                    {
+                        squareCounbt++;
+                    }
+                }
+            }
+
+            Console.WriteLine(squareCounbt);
+
+        }
+
+        static char[,] ReadMatrix(int row, int col)
+        {
+            char[,] matrix = new char[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                string[] input = Console.ReadLine().Split(" ",StringSplitOptions.RemoveEmptyEntries);
+
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = char.Parse(input[c]);
+                }
+            }
+
+            return matrix;
+        }
+
+    }
+}
