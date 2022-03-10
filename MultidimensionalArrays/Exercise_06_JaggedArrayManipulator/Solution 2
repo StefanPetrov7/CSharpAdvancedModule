@@ -1,0 +1,126 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            double[][] matrix = ReadMatrix(int.Parse(Console.ReadLine()));
+            string input;
+
+            while ((input = Console.ReadLine()) != "End")
+            {
+                string[] arg = input.Split(" ", StringSplitOptions.RemoveEmptyEntries).ToArray();
+                string cmd = arg[0];
+                int row = int.Parse(arg[1]);
+                int col = int.Parse(arg[2]);
+                int value = int.Parse(arg[3]);
+
+                if (IsIndexValid(matrix, row, col))
+                {
+                    switch (cmd)
+                    {
+                        case "Add":
+                            matrix[row][col] += value;
+                            break;
+                        case "Subtract":
+                            matrix[row][col] -= value;
+                            break;
+                    }
+                }
+            }
+
+
+
+            PrintJagMatrix(matrix);
+
+        }
+
+        static bool IsIndexValid(double[][] matrix, int row, int col)
+        {
+            if (row >= 0 && row <= matrix.Length - 1 && col >= 0 && col <= matrix[row].Length - 1)
+            {
+                return true;
+            }
+
+            return false;
+
+        }
+
+        static double[][] ReadMatrix(int row)
+        {
+            double[][] matrix = new double[row][];
+
+            for (int r = 0; r < matrix.Length; r++)
+            {
+                int[] rowData = Console.ReadLine()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToArray();
+
+                matrix[r] = new double[rowData.Length];
+
+                for (int c = 0; c < matrix[r].Length; c++)
+                {
+                    matrix[r][c] = rowData[c];
+                }
+
+                if (r > 0)
+                {
+                    int prevRowLength = matrix[r - 1].Length;
+                    int curRow = matrix[r].Length;
+
+                    if (prevRowLength == curRow)
+                    {
+                        matrix = RowMultiply(matrix, r);
+                    }
+                    else
+                    {
+                        matrix = RowMDevision(matrix, r);
+                    }
+                }
+            }
+
+            return matrix;
+        }
+
+        static double[][] RowMultiply(double[][] matrix, int row)
+        {
+            matrix[row - 1] = matrix[row - 1].Select(x => x * 2).ToArray();
+            matrix[row] = matrix[row].Select(x => x * 2).ToArray();
+            return matrix;
+        }
+
+        static double[][] RowMDevision(double[][] matrix, int row)
+        {
+            matrix[row - 1] = matrix[row - 1].Select(x => x / 2).ToArray();
+            matrix[row] = matrix[row].Select(x => x / 2).ToArray();
+            return matrix;
+        }
+
+        static void PrintJagMatrix(double[][] matrix)
+        {
+            foreach (var item in matrix)
+            {
+                Console.WriteLine(string.Join(" ", item));
+            }
+        }
+
+        static void PrintSqMAtrix(int[,] matrix)
+        {
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    Console.Write(matrix[r, c]);
+                }
+
+                Console.WriteLine();
+            }
+        }
+    }
+}
