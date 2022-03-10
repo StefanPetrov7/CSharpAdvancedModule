@@ -1,0 +1,176 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int n = int.Parse(Console.ReadLine());
+            char[,] matrix = ReadMatrix(n, n);
+            List<string> knights = GetKnightsIndex(matrix);
+            int knightsInitialCount = knights.Count;
+
+
+            while (true)
+            {
+                GetKnightsAttack(matrix, knights);
+                if (!RemoveBestKnights(knights, matrix))
+                {
+                    break;
+                }
+            }
+
+            Console.WriteLine(knightsInitialCount - knights.Count);
+        }
+
+        static void GetKnightsAttack(char[,] matrix, List<string> knights)
+        {
+
+            for (int i = 0; i < knights.Count; i++)
+            {
+                int attacks = 0;
+                int row = int.Parse(knights[i].Substring(0, 1));
+                int col = int.Parse(knights[i].Substring(1, 1));
+
+                if (IsValid(matrix, row - 2, col + 1) && IsKnightOnIndex(matrix, row - 2, col + 1))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row - 1, col + 2) && IsKnightOnIndex(matrix, row - 1, col + 2))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row + 1, col + 2) && IsKnightOnIndex(matrix, row + 1, col + 2))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row + 2, col + 1) && IsKnightOnIndex(matrix, row + 2, col + 1))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row + 2, col - 1) && IsKnightOnIndex(matrix, row + 2, col - 1))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row + 1, col - 2) && IsKnightOnIndex(matrix, row + 1, col - 2))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row - 1, col - 2) && IsKnightOnIndex(matrix, row - 1, col - 2))
+                {
+                    attacks++;
+                }
+
+                if (IsValid(matrix, row - 2, col - 1) && IsKnightOnIndex(matrix, row - 2, col - 1))
+                {
+                    attacks++;
+                }
+
+                knights[i] += attacks;
+
+            }
+
+        }
+
+        static bool RemoveBestKnights(List<string> knights, char[,] matrix)
+        {
+            int bestAttack = 0;
+            int bestKnightAttackIndex = -1;
+
+            for (int i = 0; i < knights.Count; i++)
+            {
+                int curAttack = int.Parse(knights[i].Substring(2, 1));
+
+                if (curAttack > bestAttack)
+                {
+                    bestAttack = curAttack;
+                    bestKnightAttackIndex = i;
+                }
+            }
+
+            if (bestAttack > 0)
+            {
+                int row = int.Parse(knights[bestKnightAttackIndex].Substring(0, 1));
+                int col = int.Parse(knights[bestKnightAttackIndex].Substring(1, 1));
+                matrix[row, col] = '0';
+                knights.RemoveAt(bestKnightAttackIndex);
+
+                for (int i = 0; i < knights.Count; i++)
+                {
+                    knights[i] = knights[i].Remove(2);
+                }
+
+                return true;
+            }
+
+            for (int i = 0; i < knights.Count; i++)
+            {
+                knights[i] = knights[i].Remove(2);
+            }
+
+            return false;
+
+        }
+
+        static bool IsKnightOnIndex(char[,] matrix, int row, int col)
+        {
+            if (matrix[row, col] == 'K')
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static bool IsValid(char[,] matrix, int row, int col)
+        {
+            if (row >= 0 && row <= matrix.GetLength(0) - 1 && col >= 0 && col <= matrix.GetLength(1) - 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static List<string> GetKnightsIndex(char[,] matrix)
+        {
+            List<string> knights = new List<string>();
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    if (matrix[r, c] == 'K')
+                    {
+                        knights.Add(r.ToString() + c.ToString());
+                    }
+                }
+            }
+
+            return knights;
+        }
+
+        static char[,] ReadMatrix(int row, int col)
+        {
+            char[,] matrix = new char[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                string input = Console.ReadLine();
+
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = (char)input[c];
+                }
+            }
+
+            return matrix;
+        }
