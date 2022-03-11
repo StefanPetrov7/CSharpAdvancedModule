@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int n = int.Parse(Console.ReadLine());
+            int[,] matrix = ReadMatrix(n, n);
+            List<int> indexArr = Console.ReadLine().Split(' ', ',').Select(int.Parse).ToList();
+            int[] bombs = indexArr.ToArray();
+            double matrixSum = 0;
+            int alliveCells = 0;
+
+            while (indexArr.Count > 0)
+            {
+                int row = indexArr[0];
+                int col = indexArr[1];
+                indexArr.RemoveRange(0, 2);
+                int bombValue = matrix[row, col];
+
+                if (matrix[row, col] <= 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    for (int r = row - 1; r <= row + 1; r++)
+                    {
+                        for (int c = col - 1; c <= col + 1; c++)
+                        {
+                            if (IsValid(matrix, r, c) && matrix[r, c] > 0)
+                            {
+                                matrix[r, c] -= bombValue;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    if (matrix[r, c] > 0)
+                    {
+                        alliveCells++;
+                        matrixSum += matrix[r, c];
+                    }
+                }
+            }
+
+            Console.WriteLine($"Alive cells: {alliveCells}");
+            Console.WriteLine($"Sum: {matrixSum}");
+            PrintSqMatrix(matrix);
+
+        }
+
+        static bool IsValid(int[,] matrix, int row, int col)
+        {
+            if (row >= 0 && row <= matrix.GetLength(0) - 1 && col >= 0 && col <= matrix.GetLength(1) - 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        static int[,] ReadMatrix(int row, int col)
+        {
+            int[,] matrix = new int[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                int[] input = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToArray();
+
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = input[c];
+                }
+            }
+
+            return matrix;
+        }
+
+        static void PrintSqMatrix(int[,] matrix)
+        {
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    Console.Write(matrix[r, c] + " ");
+                }
+
+                Console.WriteLine();
+            }
+        }
+    }
+}
