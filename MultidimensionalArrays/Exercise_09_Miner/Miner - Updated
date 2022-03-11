@@ -1,0 +1,164 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            long n = long.Parse(Console.ReadLine());
+            int coals = 0;
+            int coalsTaken = 0;
+            int[] possition = new int[2];
+            Queue<string> cmd = new Queue<string>(Console.ReadLine()
+              .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+              .ToArray());
+
+            char[,] matrix = ReadMatrix(n, n, possition, ref coals);
+
+            while (cmd.Count > 0)
+            {
+                string command = cmd.Dequeue();
+
+                switch (command)
+                {
+                    case "left":
+                        possition[1]--;
+                        CheckIfIndexIsOut(matrix, possition);
+                        if (IsGameOver(matrix, possition, ref coals, ref coalsTaken, cmd))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    case "right":
+                        possition[1]++;
+                        CheckIfIndexIsOut(matrix, possition);
+                        if (IsGameOver(matrix, possition, ref coals, ref coalsTaken, cmd))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    case "down":
+                        possition[0]++;
+                        CheckIfIndexIsOut(matrix, possition);
+                        if (IsGameOver(matrix, possition, ref coals, ref coalsTaken, cmd))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    case "up":
+                        possition[0]--;
+                        CheckIfIndexIsOut(matrix, possition);
+                        if (IsGameOver(matrix, possition, ref coals, ref coalsTaken, cmd))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                }
+            }
+        }
+
+        static bool IsGameOver(char[,] matrix, int[] possition, ref int coals, ref int coalsTaken, Queue<string> cmd)
+        {
+            int row = possition[0];
+            int col = possition[1];
+
+            if (matrix[row, col] == 'e')
+            {
+                Console.WriteLine($"Game over! ({row}, {col})");
+                return true;
+            }
+            else if (matrix[row, col] == 'c')
+            {
+                coalsTaken++;
+                matrix[row, col] = '*';
+
+                if (coals == coalsTaken)
+                {
+                    Console.WriteLine($"You collected all coals! ({row}, {col})");
+                    return true;
+                }
+
+                return false;
+            }
+            else if (cmd.Count == 0)
+            {
+                Console.WriteLine($"{coals - coalsTaken} coals left. ({row}, {col})");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        static void CheckIfIndexIsOut(char[,] matrix, int[] possition)
+        {
+            if (possition[1] < 0)
+            {
+                possition[1]++;
+            }
+
+            if (possition[1] > matrix.GetLength(1) - 1)
+            {
+                possition[1]--;
+            }
+
+            if (possition[0] < 0)
+            {
+                possition[0]++;
+            }
+
+            if (possition[0] > matrix.GetLength(0) - 1)
+            {
+                possition[0]--;
+            }
+        }
+
+
+        static char[,] ReadMatrix(long row, long col, int[] rowCol, ref int coals)
+        {
+            char[,] matrix = new char[row, col];
+
+            for (int r = 0; r < matrix.GetLength(0); r++)
+            {
+                string[] data = Console.ReadLine()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+
+                for (int c = 0; c < matrix.GetLength(1); c++)
+                {
+                    matrix[r, c] = char.Parse(data[c]);
+
+                    if (matrix[r, c] == 's')
+                    {
+                        rowCol[0] = r;
+                        rowCol[1] = c;
+                    }
+
+                    if (matrix[r, c] == 'c')
+                    {
+                        coals++;
+                    }
+                }
+            }
+            return matrix;
+        }
+    }
+}
