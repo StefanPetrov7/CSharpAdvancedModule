@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Dictionary<string, Dictionary<string, List<string>>> vloggers = new Dictionary<string, Dictionary<string, List<string>>>();
+            string input;
+
+            while ((input = Console.ReadLine()) != "Statistics")
+            {
+                string[] arg = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                string cmd = arg[1];
+                string vlogerOne = arg[0];
+                string vlogerTwo = arg[arg.Length - 1];
+
+                switch (cmd)
+                {
+                    case "joined":
+                        JoinVLog(vloggers, vlogerOne);
+                        break;
+                    case "followed":
+                        Following(vloggers, vlogerOne, vlogerTwo);
+                        break;
+                }
+            }
+
+            Console.WriteLine($"The V-Logger has a total of {vloggers.Count} vloggers in its logs.");
+            int count = 0;
+
+            foreach (var vloger in vloggers.OrderByDescending(x => x.Value["followers"].Count).ThenBy(x => x.Value["following"].Count))
+            {
+                count++;
+
+                List<string> followers = vloger.Value["followers"].ToList();
+                List<string> following = vloger.Value["following"].ToList();
+
+                if (count == 1)
+                {
+                    Console.WriteLine($"{count}. {vloger.Key} : {vloger.Value["followers"].Count} followers, {vloger.Value["following"].Count} following");
+
+                    if (vloger.Value["followers"].Count > 0)
+                    {
+                        foreach (var item in vloger.Value["followers"].OrderBy(x => x))
+                        {
+                            Console.WriteLine($"*  {item}");
+                        }
+                    }
+
+                    continue;
+                }
+
+                Console.WriteLine($"{count}. {vloger.Key} : {followers.Count} followers, {following.Count} following");
+
+            }
+
+        }
+
+        static void Following(Dictionary<string, Dictionary<string, List<string>>> vloggers, string vlogerOne, string vlogerTwo)
+        {
+            string followingVlogger = vlogerOne;
+            string follwedVlogger = vlogerTwo;
+
+            if (vloggers.ContainsKey(followingVlogger) == false || vloggers.ContainsKey(follwedVlogger) == false) // following or followed do not exist
+            {
+                return;
+            }
+
+            if (follwedVlogger == followingVlogger)  // Cannot follow himself
+            {
+                return;
+            }
+
+            if (vloggers[follwedVlogger]["followers"].Contains(followingVlogger))  // cannot follow same vlogger two times 
+            {
+                return;
+            }
+
+            vloggers[followingVlogger]["following"].Add(follwedVlogger);
+            vloggers[follwedVlogger]["followers"].Add(followingVlogger);
+
+        }
+
+        static void JoinVLog(Dictionary<string, Dictionary<string, List<string>>> vloggers, string vlogerOne)
+        {
+            string joiningVlogger = vlogerOne;
+
+            if (vloggers.ContainsKey(joiningVlogger))
+            {
+                return;
+            }
+
+            vloggers.Add(joiningVlogger, new Dictionary<string, List<string>>());
+            vloggers[joiningVlogger]["followers"] = new List<string>();
+            vloggers[joiningVlogger]["following"] = new List<string>();
+
+        }
+    }
+}
