@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Func<decimal, decimal> vat = x => (x * 1.2M);
+            Console.ReadLine().Split(", ").Select(decimal.Parse).Select(vat).ToList().ForEach(x => Console.WriteLine($"{x:f2}"));
+
+        }
+    }
+}
