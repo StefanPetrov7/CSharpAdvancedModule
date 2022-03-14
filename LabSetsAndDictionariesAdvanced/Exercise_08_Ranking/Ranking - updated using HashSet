@@ -1,0 +1,147 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Practice
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            HashSet<Contest> contests = new HashSet<Contest>();
+            HashSet<Student> students = new HashSet<Student>();
+
+            string input;
+
+            while ((input = Console.ReadLine()) != "end of contests")
+            {
+                string[] arg = input.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                string contestName = arg[0];
+                string pass = arg[1];
+                Contest contest = new Contest(contestName, pass);
+                contests.Add(contest);
+            }
+
+            while ((input = Console.ReadLine()) != "end of submissions")
+            {
+                string[] arg = input.Split("=>", StringSplitOptions.RemoveEmptyEntries);
+                string contestName = arg[0];
+                string pass = arg[1];
+                string studentName = arg[2];
+                int points = int.Parse(arg[3]);
+
+                if (IsContestValid(contests, contestName, pass))
+                {
+                    if (CheckIfStudentExist(students, studentName))
+                    {
+                        Student curStudent = students.FirstOrDefault(x => x.Name == studentName);
+                        Contest curContest = curStudent.studentContests.FirstOrDefault(x => x.Name == contestName);
+
+                        if (curContest == null)
+                        {
+                            Contest contest = new Contest(contestName, pass);
+                            contest.Points = points;
+                            curStudent.studentContests.Add(contest);
+                        }
+                        else
+                        {
+                            if (curContest.Points > points)
+                            {
+                                continue;
+                            }
+
+                            curStudent.studentContests.FirstOrDefault(x => x.Name == contestName).Points = points;
+                        }
+                    }
+                    else
+                    {
+                        Contest contest = new Contest(contestName, pass);
+                        contest.Points = points;
+                        Student student = new Student(studentName);
+                        student.studentContests.Add(contest);
+                        students.Add(student);
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            Student bestStudent = students.OrderByDescending(x => x.GetPoints()).First();
+
+            Console.WriteLine($"Best candidate is {bestStudent.Name} with total {bestStudent.GetPoints()} points.");
+            Console.WriteLine("Ranking:");
+
+            foreach (var student in students.OrderBy(x => x.Name))
+            {
+                Console.WriteLine($"{student.Name}");
+
+                foreach (var exam in student.studentContests.OrderByDescending(x => x.Points))
+                {
+                    Console.WriteLine($"#  {exam.Name} -> {exam.Points}");
+                }
+            }
+        }
+
+        static bool CheckIfStudentExist(HashSet<Student> students, string studentName)
+        {
+            Student curStudent = students.FirstOrDefault(x => x.Name == studentName);
+
+            if (curStudent == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        static bool IsContestValid(HashSet<Contest> contests, string name, string pass)
+        {
+            Contest curContest = contests.FirstOrDefault(x => x.Name == name && x.Password == pass);
+
+            if (curContest == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public class Student
+        {
+            public List<Contest> studentContests;
+
+            public Student(string name)
+            {
+                this.Name = name;
+                this.Points = 0;
+                this.studentContests = new List<Contest>();
+            }
+
+            public string Name { get; set; }
+
+            public int Points { get; set; }
+
+            public int GetPoints()
+            {
+                return this.studentContests.Sum(x => x.Points);
+            }
+        }
+
+        public class Contest
+        {
+            public Contest(string name, string pass)
+            {
+                this.Name = name;
+                this.Password = pass;
+                this.Points = 0;
+            }
+
+            public string Name { get; set; }
+            public string Password { get; set; }
+            public int Points { get; set; }
+
+        }
+    }
+}
