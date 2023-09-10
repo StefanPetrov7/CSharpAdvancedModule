@@ -217,18 +217,3 @@ class Radioactive_Mutant_Vampire_Bunnies
             Console.WriteLine();
         }
     }
-
-    public static void ReadJaggedMatrix(int[][] matrix)
-    {
-        for (int row = 0; row < matrix.GetLength(0); row++)
-        {
-            int[] rowData = Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-            matrix[row] = new int[rowData.Length];
-
-            for (int col = 0; col < matrix[row].Length; col++)
-            {
-                matrix[row][col] = rowData[col];
-            }
-        }
-    }
-}
