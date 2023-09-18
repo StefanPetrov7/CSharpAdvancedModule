@@ -13,7 +13,7 @@ public class StartUp
 
         foreach (var book in libraryTwo)
         {
-            Console.WriteLine(string.Join(" ", book.Authors));
+            Console.WriteLine(book);
         }
     }
 }

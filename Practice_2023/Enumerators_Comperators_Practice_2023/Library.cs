@@ -7,10 +7,10 @@ namespace IteratorsAndComparators
     {
         public Library(params Book[] books)
         {
-            this.Books = books.ToList();
+            this.Books = new SortedSet<Book>(books, new BookComparator());
         }
 
-        public List<Book> Books { get; set; }
+        public SortedSet<Book> Books { get; set; }
 
         public IEnumerator<Book> GetEnumerator()  // return Enumerator implemented with LibraryIterator 
         {
@@ -39,11 +39,11 @@ namespace IteratorsAndComparators
 
             object IEnumerator.Current => this.Current;  // old implementation 
 
-            public void Dispose() { } 
+            public void Dispose() { }
 
             public bool MoveNext() => ++index < this.Books.Count;  // this is called in the cycles and unil is true index is ++
-  
-            public void Reset()  
+
+            public void Reset()
             {
                 this.index = -1;
             }
